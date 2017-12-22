@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Description: Example Custom Resource - Lambda Basic
+
+Outputs: ######################################################################
+  DefaultResourceId:
+    Value: !Ref DefaultExample
+
+  DefaultResourceExampleThing:
+    Value: !GetAtt DefaultExample.ExampleThing
+
+  OtherResourceId:
+    Value: !Ref OtherExample
+
+  OtherResourceExampleThing:
+    Value: !GetAtt OtherExample.ExampleThing
+# Outputs #####################################################################
+
+Resources: ####################################################################
+  ExampleResource:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: example-resource.zip
+      Environment:
+        Variables:
+          'STACK_NAME': !Ref 'AWS::StackName'
+          'STACK_REGION': !Ref 'AWS::Region'
+      Handler: handler.Handle
+      Runtime: python2.7
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Timeout: 60 #seconds
+
+  DefaultExample:
+    Type: Custom::ExampleResource
+    Properties:
+      ServiceToken: !GetAtt ExampleResource.Arn
+
+  OtherExample:
+    Type: Custom::ExampleResource
+    Properties:
+      ServiceToken: !GetAtt ExampleResource.Arn
+      ExampleThing: This is something other than the default.
+# Resources ###################################################################

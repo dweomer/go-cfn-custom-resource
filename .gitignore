@@ -1,0 +1,6 @@
+.vscode/
+vendor/
+Gopkg.lock
+*.so
+*.template
+*.zip
